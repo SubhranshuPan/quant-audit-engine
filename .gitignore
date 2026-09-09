@@ -19,3 +19,7 @@ dist/
 # The source paper is third-party copyrighted material. The code implements it
 # and cites it; redistributing the PDF is not ours to do.
 paper/
+
+# Draft writing about the project - published on your terms, not swept into a
+# commit by `git add -A`.
+substack-post.html
