@@ -1,0 +1,21 @@
+# Render blueprint. Lives at the repo root because that is where Render looks;
+# rootDir points it at the backend inside this monorepo.
+#
+# QUANT_CORS_ORIGINS is intentionally left unset (sync: false) so the dashboard's
+# real origin must be supplied in the Render dashboard before this serves anyone.
+services:
+  - type: web
+    name: quant-audit-api
+    runtime: docker
+    plan: free
+    rootDir: code/quant_audit_backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    envVars:
+      - key: QUANT_RATE_LIMIT_PER_MINUTE
+        value: "30"
+      - key: QUANT_USE_SNAPSHOT_FALLBACK
+        value: "true"     # the provider frequently blocks datacenter IPs
+      - key: QUANT_CORS_ORIGINS
+        sync: false       # set to ["https://<your-app>.vercel.app"] after Vercel deploys

@@ -4,9 +4,16 @@ import { API_BASE, checkHealth } from "../lib/api";
 
 const STATES = {
   checking: { label: "Checking engine", dot: "bg-muted" },
+  // A free-tier host sleeps when idle and takes the better part of a minute to
+  // wake. Reporting "unreachable" for that whole window would be wrong -- the
+  // engine is coming up, and the honest label says so.
+  waking: { label: "Waking the engine", dot: "bg-warn animate-pulse" },
   online: { label: "Engine connected", dot: "bg-good" },
   offline: { label: "Engine unreachable", dot: "bg-critical" },
 };
+
+// How long a backend may plausibly take to cold-start before we call it down.
+const WAKE_GRACE_MS = 90000;
 
 /**
  * Polls the backend so the connection state is always current - an audit that
@@ -19,6 +26,7 @@ function useBackendStatus() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const startedAt = Date.now();
     let cancelled = false;
     let timer;
 
@@ -34,12 +42,21 @@ function useBackendStatus() {
           setVersion(body?.version ?? null);
         }
       } catch {
-        if (!cancelled) setStatus("offline");
+        // Distinguish "still coming up" from "not there". Only after the grace
+        // window has passed without a single success is it genuinely offline.
+        if (!cancelled) {
+          setStatus((prev) =>
+            prev === "online" || Date.now() - startedAt > WAKE_GRACE_MS ? "offline" : "waking",
+          );
+        }
       } finally {
         // Chain the next probe from this one's completion rather than firing on
         // a fixed interval, so slow responses cannot pile up against the
         // browser's per-host connection limit.
-        if (!cancelled) timer = setTimeout(poll, 15000);
+        if (!cancelled) {
+          const settled = Date.now() - startedAt > WAKE_GRACE_MS;
+          timer = setTimeout(poll, settled ? 30000 : 5000);
+        }
       }
     }
 
