@@ -80,7 +80,7 @@ code/
 # API
 cd code/quant_audit_backend
 python -m venv venv && venv/Scripts/activate     # source venv/bin/activate on Unix
-pip install -r requirements.txt
+pip install -r requirements-dev.txt              # runtime-only deps: requirements.txt
 uvicorn app.main:app --port 8000                 # docs at /docs
 
 # Dashboard

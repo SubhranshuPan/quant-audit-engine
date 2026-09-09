@@ -49,7 +49,7 @@ that case still PASSES.
 cd quant_audit_backend
 python -m venv venv
 venv\Scripts\activate          # Windows;  source venv/bin/activate on macOS/Linux
-pip install -r requirements.txt
+pip install -r requirements-dev.txt   # requirements.txt alone is runtime-only
 uvicorn app.main:app --reload
 ```
 
@@ -190,6 +190,11 @@ exists. `run_audit` accepts an explicit `pi_star` if you want a different
 benchmark (equal-weight, a stated policy target) from Python.
 
 ## Testing
+
+`requirements-dev.txt` adds statsmodels and scipy, which exist purely as
+independent references for the tests: statsmodels for the HAC estimator, scipy
+for the normal tail. The shipped app imports neither, so the runtime image does
+not carry them.
 
 ```bash
 pytest              # 105 offline tests

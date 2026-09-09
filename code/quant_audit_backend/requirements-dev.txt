@@ -1,0 +1,9 @@
+-r requirements.txt
+
+# statsmodels is the reference the from-scratch Newey-West estimator is checked
+# against; scipy provides the independent normal tail the p-value is verified
+# against. Both are test-only by design.
+statsmodels>=0.14
+scipy>=1.11
+pytest>=8.0
+httpx>=0.27
