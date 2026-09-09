@@ -1,0 +1,115 @@
+@import "@fontsource-variable/public-sans";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    /* The console is dark-only by design; painting the root stops a white
+       flash before React mounts and on overscroll. */
+    background-color: theme("colors.canvas");
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans text-base antialiased;
+  }
+
+  /* Every figure in this interface is compared against another figure, so
+     digits are always tabular - columns of numbers line up on the decimal. */
+  .figures {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum" 1;
+  }
+
+  /* A visible focus ring on keyboard navigation only, so pointer users don't
+     see it but keyboard users are never lost. */
+  :focus-visible {
+    @apply outline-none ring-2 ring-accent ring-offset-2 ring-offset-canvas;
+  }
+
+  /* Native controls inherit the dark surface rather than the OS default. */
+  input,
+  select,
+  button {
+    font: inherit;
+    color: inherit;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.7);
+    cursor: pointer;
+  }
+}
+
+@layer components {
+  /* A panel is a flat surface separated by a hairline, never by a shadow.
+     Shadows on every card are the tell of a template; hairlines are what
+     financial documents actually use to group things. */
+  .panel {
+    @apply rounded-panel border border-line bg-panel;
+  }
+
+  /* flex-wrap matters: several headings pair a title with a long mono caption
+     ("95% Newey-West HAC interval on Ĉ_T"), and without wrapping that caption
+     pushes past a phone-width viewport and scrolls the whole page sideways. */
+  .panel-heading {
+    @apply flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1
+           border-b border-line px-5 py-3.5;
+  }
+
+  .field-label {
+    @apply mb-1.5 block text-small font-medium text-ink-2;
+  }
+
+  .field {
+    @apply w-full rounded-control border border-line bg-raised px-3 py-2 text-base
+           text-ink placeholder:text-muted hover:border-line-strong focus:border-accent;
+  }
+}
+
+/* Range input: styled from scratch because the native track ignores most
+   styling and would otherwise show the OS accent colour. */
+.slider {
+  @apply h-1 w-full cursor-pointer appearance-none rounded-full bg-line;
+}
+.slider::-webkit-slider-thumb {
+  @apply h-4 w-4 appearance-none rounded-full border-2 border-canvas bg-accent;
+}
+.slider::-moz-range-thumb {
+  @apply h-4 w-4 rounded-full border-2 border-canvas bg-accent;
+}
+
+/* One orchestrated motion moment: the confidence interval settles into place
+   when a verdict arrives. Nothing else on the page animates on load. */
+@keyframes interval-settle {
+  from {
+    opacity: 0;
+    transform: scaleX(0.35);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.interval-settle {
+  animation: interval-settle 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  transform-origin: var(--settle-origin, 50%) 50%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

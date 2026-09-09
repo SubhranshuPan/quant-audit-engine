@@ -1,0 +1,16 @@
+# Render blueprint. `QUANT_CORS_ORIGINS` must be set to the deployed frontend's
+# origin before this is public -- while it is a wildcard the API answers any site
+# (credentials are auto-disabled in that state, but do not ship it).
+services:
+  - type: web
+    name: quant-audit-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: QUANT_RATE_LIMIT_PER_MINUTE
+        value: "30"
+      - key: QUANT_CORS_ORIGINS
+        sync: false          # set to ["https://your-frontend.vercel.app"]
+      - key: QUANT_USE_SNAPSHOT_FALLBACK
+        value: "true"        # yfinance is often blocked from datacenter IPs

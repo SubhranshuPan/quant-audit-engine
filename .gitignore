@@ -1,0 +1,21 @@
+# Python
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+
+# Local config and secrets
+.env
+.env.local
+.env.*.local
+
+# Logs and scratch
+*.log
+
+# The source paper is third-party copyrighted material. The code implements it
+# and cites it; redistributing the PDF is not ours to do.
+paper/
